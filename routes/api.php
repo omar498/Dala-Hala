@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\ConsumerController;
+use App\Http\Controllers\Api\HomePageController;
 use App\Http\Controllers\Api\CategoriesController;
 use App\Http\Controllers\Api\ConsumerCartController;
 
@@ -13,16 +14,15 @@ use App\Http\Controllers\Api\ConsumerCartController;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
+Route::get('homepage', [HomePageController::class, 'index']);
 
 Route::group(['prefix' => 'auth'], function ($router)
 {
     Route::post('login', [AuthController::class ,'loginn']);
     Route::post('register', [AuthController::class ,'register']);
-    // Consumer Function
-
 
 });
-// User Auth
+// Consumer Auth
 Route::group(['prefix' => 'user'], function ($router){
     Route::post('login', [ConsumerController::class ,'login']);
     Route::post('register', [ConsumerController::class ,'register']);

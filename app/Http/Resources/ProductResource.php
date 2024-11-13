@@ -3,6 +3,8 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
+use App\Http\Resources\CategoriesResource;
+use App\Models\Categories;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource
@@ -16,6 +18,8 @@ class ProductResource extends JsonResource
     {
         return[
 
+           // 'category' => new CategoriesResource($this->whenLoaded('category')),
+           
             'id' => $this->id,
             'name'=>$this->name,
             'description'=>$this->description,

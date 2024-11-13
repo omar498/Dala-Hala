@@ -13,10 +13,10 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $categories = Product::all();
+        $product = Product::all();
 
         return response()->json(['message' => 'المنتجات',
-        'categories' =>ProductResource::collection($categories)
+        'product' =>ProductResource::collection($product)
         ], 200);
     }
 

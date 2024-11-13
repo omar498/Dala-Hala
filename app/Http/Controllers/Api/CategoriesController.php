@@ -49,7 +49,14 @@ class CategoriesController extends Controller
         ]);
         // Find the category by ID
         $category = Categories::find($request->input('id'));
+        
+        if ($category->products()->count() > 0) {
+            return response()->json([
+                'message' => 'Cannot delete category. It contains products.',
+            ], 400); // Return a 400 Bad Request status
+        }
         $category->delete();
+
         return response()->json([
             'message' => 'Category deleted successfully!',
             'category'=>new CategoriesResource($category),

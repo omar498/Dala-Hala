@@ -11,15 +11,14 @@ class Product extends Model
 
     public function category()
     {
-        return $this->belongsTo(Categories::class);
+       //  return $this->belongsTo(Categories::class);
+        return $this->belongsTo(Categories::class, 'category_id');
     }
+
     public function cart()
     {
         return $this->belongsTo(Cart::class);
 
     }
-    // public function consumer()
-    // {
-    //     return $this->belongsTo(Consumer::class);
-    // }
+
 }
