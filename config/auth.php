@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Consumer;
+
 return [
 
     /*
@@ -40,11 +42,16 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-        
+        //Api Gurds
         'api' => [
             'driver' => 'jwt',
             'provider' => 'users',
         ],
+        'consumer-api' => [
+            'driver' => 'jwt',
+            'provider' => 'consumer',
+        ],
+
     ],
 
 
@@ -70,12 +77,13 @@ return [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
+        'consumer' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Consumer::class,
+        ]
+        ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
-    ],
+
 
     /*
     |--------------------------------------------------------------------------

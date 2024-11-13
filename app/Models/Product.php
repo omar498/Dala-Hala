@@ -13,4 +13,13 @@ class Product extends Model
     {
         return $this->belongsTo(Categories::class);
     }
+    public function cart()
+    {
+        return $this->belongsTo(Cart::class);
+
+    }
+    // public function consumer()
+    // {
+    //     return $this->belongsTo(Consumer::class);
+    // }
 }

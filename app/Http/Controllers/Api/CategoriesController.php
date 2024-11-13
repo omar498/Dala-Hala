@@ -3,18 +3,25 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Categories;
+use Tymon\JWTAuth\JWTAuth;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Http\Response;
+use App\Http\Resources\CategoriesResource;
 
 class CategoriesController extends Controller
 {
     public function index()
     {
         $categories = Categories::all();
-        return response()->json($categories, Response::HTTP_OK);
+
+        return response()->json(['message' => 'الاقسام',
+        'categories' =>CategoriesResource::collection($categories)
+        ], 200);
     }
+
+
 
     public function store(Request $request)
     {
@@ -44,7 +51,9 @@ class CategoriesController extends Controller
         $category = Categories::find($request->input('id'));
         $category->delete();
         return response()->json([
-            'message' => 'Category deleted successfully!'
-        ], Response::HTTP_NO_CONTENT);
+            'message' => 'Category deleted successfully!',
+            'category'=>new CategoriesResource($category),
+            200
+        ]);
     }
 }

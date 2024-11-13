@@ -5,21 +5,20 @@ namespace App\Http\Controllers\Api;
 use App\Models\Product;
 use App\Models\Categories;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ProductResource;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with('category')->get();
-        return response()->json($products);
-    }
+        $categories = Product::all();
 
-     public function create()
-     {
-         $categories = Categories::all();
-         return response()->json($categories);
-     }
+        return response()->json(['message' => 'المنتجات',
+        'categories' =>ProductResource::collection($categories)
+        ], 200);
+    }
 
     public function store(Request $request)
     {
@@ -31,15 +30,31 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
         ]);
         $product = Product::create($request->all());
-        return response()->json($product, 201);
+
+        return response()->json([
+            'message' => 'Product added successfully!',
+            'product' => new ProductResource($product),
+            200
+        ]);
     }
 
+     public function delete_product(Request $request)
+    {
+        try{
+        $id = $request->input('id');
 
-     public function destroy($id)
-     {
-         $product = Product::findOrFail($id);
-         $product->delete();
-         return response()->json(null, 204);
-     }
+        $product = Product::findOrFail($id);
+        $product->delete();
+
+        return response()->json(['message' => 'Product deleted successfully',
+        'product'=>new ProductResource($product),
+
+         200]);
+        }
+
+        catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['message' => 'Product not found'], 404);
+        }
+    }
 }
 
