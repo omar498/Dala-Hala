@@ -7,8 +7,8 @@ use Tymon\JWTAuth\JWTAuth;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\CategoriesResource;
+use App\Http\Requests\CategoryStoreRequest;
 
 class CategoriesController extends Controller
 {
@@ -17,27 +17,23 @@ class CategoriesController extends Controller
         $categories = Categories::all();
 
         return response()->json(['message' => 'الاقسام',
-        'categories' =>CategoriesResource::collection($categories)
+        'data' =>CategoriesResource::collection($categories)
         ], 200);
     }
 
 
 
-    public function store(Request $request)
+    public function store(CategoryStoreRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name',
-        ],[
-            'name.unique' => 'The category name must be unique. Please choose another name.',
-        ]);
-        $category = Categories::create($validated);
+        $category = Categories::create($request->validated());
+
         return response()->json([
             'message' => 'Category created successfully!',
-            'category' => $category
+            'data' => $category
         ], Response::HTTP_CREATED);
     }
 
-    public function destroy(Request $request)
+    public function delete(Request $request)
     {
         $request->validate([
             'id' => 'required|integer|exists:categories,id',
@@ -49,7 +45,7 @@ class CategoriesController extends Controller
         ]);
         // Find the category by ID
         $category = Categories::find($request->input('id'));
-        
+
         if ($category->products()->count() > 0) {
             return response()->json([
                 'message' => 'Cannot delete category. It contains products.',
@@ -59,7 +55,7 @@ class CategoriesController extends Controller
 
         return response()->json([
             'message' => 'Category deleted successfully!',
-            'category'=>new CategoriesResource($category),
+            'data'=>new CategoriesResource($category),
             200
         ]);
     }

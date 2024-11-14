@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\ConsumerController;
 use App\Http\Controllers\Api\HomePageController;
 use App\Http\Controllers\Api\CategoriesController;
-use App\Http\Controllers\Api\ConsumerCartController;
+use App\Http\Controllers\Api\CartController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -18,7 +18,7 @@ Route::get('homepage', [HomePageController::class, 'index']);
 
 Route::group(['prefix' => 'auth'], function ($router)
 {
-    Route::post('login', [AuthController::class ,'loginn']);
+    Route::post('login', [AuthController::class ,'login']);
     Route::post('register', [AuthController::class ,'register']);
 
 });
@@ -31,6 +31,9 @@ Route::group(['prefix' => 'user'], function ($router){
 Route::middleware(['auth:consumer-api'])->group(function(){
     Route::post('refresh_user_token', [ConsumerController::class, 'refreshToken']);
     Route::post('user_logout', [ConsumerController::class ,'logout']);
+    Route::Post('createCart', [CartController::class, 'makeCart']);
+    Route::Post('AddToCart', [CartController::class, 'addToCart']);
+    Route::Post('showCart', [CartController::class, 'showCart']);
 
 });
 
@@ -42,12 +45,12 @@ Route::middleware(['auth:api'])->group(function(){
     Route::post('logout', [AuthController::class ,'logout']);
     Route::delete('remove', [AuthController::class,'delete_admin']);
     // Manage Users Functions
-    Route::delete('delete_user', [ConsumerController::class,'delete_admin']);
+    Route::delete('delete_user', [ConsumerController::class,'delete_user']);
 
     // Categories Function
     Route::get('/Categories', [CategoriesController::class, 'index']);
     Route::post('Categories',[CategoriesController::class,'store']);
-    Route::delete('Categories/Delete', [CategoriesController::class, 'destroy']);
+    Route::delete('Categories_Delete', [CategoriesController::class, 'delete']);
 
     // Product Function
     Route::get('products', [ProductController::class, 'index']);
@@ -57,7 +60,6 @@ Route::middleware(['auth:api'])->group(function(){
     Route::post('settings', [SettingController::class, 'add']);
     Route::get('settings', [SettingController::class, 'get_all']);
     Route::delete('settings', [SettingController::class, 'deleteSetting']);
-    Route::Post('createCart', [ConsumerCartController::class, 'createCart']);
 
 
 

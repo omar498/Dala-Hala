@@ -15,10 +15,9 @@ class Product extends Model
         return $this->belongsTo(Categories::class, 'category_id');
     }
 
-    public function cart()
+    public function carts()
     {
-        return $this->belongsTo(Cart::class);
-
+        return $this->hasMany(Cart::class);
     }
 
 }

@@ -6,27 +6,19 @@ use App\Models\Setting;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SettingResource;
+use App\Http\Requests\SettingStoreRequest;
 
 class SettingController extends Controller
 {
-    public function add(Request $request)
+    public function add(SettingStoreRequest $request)
     {
 
-        $request->validate([
-            'title' => 'required|string|max:255|unique:settings,title',
-            'value' => 'required',
-        ]);
-
-
-        $setting = new Setting();
-        $setting->title = $request->input('title');
-        $setting->value = $request->input('value');
-        $setting->save();
+        $setting = Setting::create($request->validated());
 
 
         return response()->json([
             'message' => 'Setting added successfully!',
-            'setting' => new SettingResource($setting),
+            'data' => new SettingResource($setting),
         ], 201);
     }
 
@@ -45,7 +37,7 @@ class SettingController extends Controller
         $setting->delete();
 
         return response()->json(['message' => 'Setting deleted successfully',
-        'setting'=>new SettingResource($setting),
+        'data'=>new SettingResource($setting),
 
          200]);
         }

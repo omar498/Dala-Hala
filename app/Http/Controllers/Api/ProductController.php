@@ -7,6 +7,7 @@ use App\Models\Categories;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductStoreRequest;
 use App\Http\Resources\ProductResource;
 
 class ProductController extends Controller
@@ -15,25 +16,20 @@ class ProductController extends Controller
     {
         $product = Product::all();
 
-        return response()->json(['message' => 'المنتجات',
-        'product' =>ProductResource::collection($product)
+        return response()->json([
+            'message' => 'المنتجات',
+        'data' =>ProductResource::collection($product)
         ], 200);
     }
 
-    public function store(Request $request)
+    public function store(ProductStoreRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric',
-            'stock' => 'required|integer',
-            'category_id' => 'required|exists:categories,id',
-        ]);
-        $product = Product::create($request->all());
+
+        $product = Product::create($request->validated());
 
         return response()->json([
             'message' => 'Product added successfully!',
-            'product' => new ProductResource($product),
+            'data' => new ProductResource($product),
             200
         ]);
     }
@@ -46,8 +42,9 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
         $product->delete();
 
-        return response()->json(['message' => 'Product deleted successfully',
-        'product'=>new ProductResource($product),
+        return response()->json([
+        'message' => 'Product deleted successfully',
+        'data'=>new ProductResource($product),
 
          200]);
         }

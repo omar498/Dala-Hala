@@ -7,8 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserLoginRequest;
 use App\Http\Resources\ConsumerResource;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\UserRegisterRequest;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 class ConsumerController extends Controller
@@ -16,55 +18,38 @@ class ConsumerController extends Controller
 
 
 
-    public function register(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|between:2,100',
-            'phone_number' => 'required|unique:consumers,phone_number',
-            'email' => 'required|string|email|max:100|unique:users',
-            'password' => 'required|string|confirmed|min:6',
-        ]);
-        if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-        $consumer = Consumer::create(array_merge(
-                    $validator->validated(),
-                    ['password' => bcrypt($request->password)]
-                ));
+    public function register(UserRegisterRequest $request) {
+        $validator =$request->validated();
+        $validator['password'] = bcrypt($validator['password']);
+        $consumer = Consumer::create($validator);
         return response()->json([
             'message' => ' successfully registered',
-            'consumer' => $consumer
+            'data' => $consumer
         ], 201);
     }
 
 
-    public function login(Request $request)
+    public function login(UserLoginRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'phone_number' => 'required',
-            'password' => 'required'
-        ]);
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+        $validator =$request->validated();
 
-        }
+        $validator = $request->only('phone_number','password');
 
-        $credentials = $request->only('phone_number','password');
-
-        if (!$token = auth()->guard('consumer-api')->attempt($credentials)) {
+        if (!$token = auth()->guard('consumer-api')->attempt($validator)) {
             return response()->json(['error' => 'Invalid Credentials'], 401);
         }
         $consumer = auth()->guard('consumer-api')->user();
 
         return response()->json([
             'message' => 'Login successful',
-            'consumer'=>new ConsumerResource($consumer),
+            'data'=>new ConsumerResource($consumer),
             'access_token' => $token,
           'token_type' => 'Bearer'
 
         ],200);
     }
 
-    public function delete_admin(Request $request)
+    public function delete_user(Request $request)
     {
         try{
         $id = $request->input('id');
@@ -73,7 +58,7 @@ class ConsumerController extends Controller
         $user->delete();
 
         return response()->json(['message' => 'User deleted successfully',
-        'user'=>new ConsumerResource($user),
+        'data'=>new ConsumerResource($user),
 
          200]);
         }

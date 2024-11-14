@@ -24,7 +24,7 @@ class HomePageController extends Controller
         'message' => 'الاقسام والمنتجات',
         'categories' => CategoriesResource::collection($categories),
         'products' => CategoriesResource::collection($categories_with_products),
-        'Settings' => SettingResource::collection($settings)
+        'footer' => SettingResource::collection($settings)
     ], 200);
     }
 
