@@ -25,8 +25,14 @@ class ProductController extends Controller
     public function store(ProductStoreRequest $request)
     {
 
-        $product = Product::create($request->validated());
+        $productData = $request->validated();
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('Product', 'images');
+            $productData['image_path'] = $imagePath;
+        }
 
+
+        $product = Product::create($productData);
         return response()->json([
             'message' => 'Product added successfully!',
             'data' => new ProductResource($product),

@@ -19,6 +19,7 @@ class Consumer extends Authenticatable implements JWTSubject
         'email',
         'password',
         'phone_number',
+        'image_path',
     ];
 
     protected $hidden = [
@@ -43,7 +44,7 @@ class Consumer extends Authenticatable implements JWTSubject
     {
         return [];
     }
-    
+
     public function cart()
     {
         // 1==>many

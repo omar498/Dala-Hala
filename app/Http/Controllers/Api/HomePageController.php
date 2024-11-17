@@ -13,10 +13,11 @@ class HomePageController extends Controller
     public function index()
     {
     $categories = Categories::all();
-   // $categories_with_products = Categories::with('products')->get();
+    
     $categories_with_products = Categories::with(['products' => function($query) {
         $query->take(3);
     }])->get();
+
     $settings = Setting::all();
 
 

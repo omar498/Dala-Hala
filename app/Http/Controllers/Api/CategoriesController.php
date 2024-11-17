@@ -25,11 +25,16 @@ class CategoriesController extends Controller
 
     public function store(CategoryStoreRequest $request)
     {
-        $category = Categories::create($request->validated());
+        $categorytData = $request->validated();
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('category', 'images');
+            $categorytData['image_path'] = $imagePath;
+        }
+        $category = Categories::create($categorytData);
 
         return response()->json([
             'message' => 'Category created successfully!',
-            'data' => $category
+            'data' => new CategoriesResource($category)
         ], Response::HTTP_CREATED);
     }
 

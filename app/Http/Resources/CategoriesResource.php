@@ -21,6 +21,8 @@ class CategoriesResource extends JsonResource
             'categories' => [
                 'id' => $this->id,
                 'name' => $this->name,
+                'image_path' => $this->image_path,
+
                 'products' => ProductResource::collection($this->whenLoaded('products')),
 
             ]

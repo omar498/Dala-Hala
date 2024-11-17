@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CategoryStoreRequest extends FormRequest
+class RateStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,9 @@ class CategoryStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:categories,name',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'product_id' => 'required|exists:products,id',
+            'rate' => 'required|numeric|between:1,5', // Rate should be between 1 and 5
+            'comment' => 'nullable|string|max:255',
         ];
     }
 }

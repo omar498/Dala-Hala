@@ -7,7 +7,7 @@ use App\Http\Resources\CategoriesResource;
 use App\Models\Categories;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProductResource extends JsonResource
+class ProductRateResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,7 +18,6 @@ class ProductResource extends JsonResource
     {
         return[
 
-           // 'category' => new CategoriesResource($this->whenLoaded('category')),
 
             'id' => $this->id,
             'name'=>$this->name,
@@ -28,6 +27,12 @@ class ProductResource extends JsonResource
             'stock'=>$this->stock,
             'category_id'=>$this->category_id,
             'image_path'=>$this->image_path,
+            'ratings' => $this->rates->take(3)->map(function ($rate) {
+                return [
+                    'score' => $rate->rate,
+                    'comment' => $rate->comment,
+                ];
+            }),
         ];
 }
 }

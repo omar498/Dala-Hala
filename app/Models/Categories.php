@@ -9,6 +9,7 @@ class Categories extends Model
     protected $table= 'categories';
     protected $fillable=[
         'name',
+        'image_path',
 
     ];
 
