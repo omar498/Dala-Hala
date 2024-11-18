@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\ConsumerController;
 use App\Http\Controllers\Api\HomePageController;
 use App\Http\Controllers\Api\CategoriesController;
+use App\Http\Controllers\Api\CategoryPageController;
 use App\Http\Controllers\Api\ProductPageController;
 
 // Route::get('/user', function (Request $request) {
@@ -43,6 +44,7 @@ Route::middleware(['auth:consumer-api'])->group(function(){
     Route::post('rates', [RateController::class, 'store']);
 
     Route::get('product_page', [ProductPageController::class, 'show']);
+    Route::get('catrgory_page', [CategoryPageController::class, 'show']);
 
 });
 

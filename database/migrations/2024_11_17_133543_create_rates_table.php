@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('rates', function (Blueprint $table) {
-            $table->id(); 
+            $table->id();
             $table->unsignedBigInteger('product_id');
             $table->decimal('rate', 5, 2);
             $table->text('comment')->nullable();

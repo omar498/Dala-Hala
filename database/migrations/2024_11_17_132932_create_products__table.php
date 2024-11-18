@@ -16,9 +16,11 @@ return new class extends Migration
             $table->string('name'); // Product name
             $table->text('description')->nullable(); // Product description
             $table->decimal('price', 10, 2); // Product price
-            $table->integer('stock')->default(0); // Stock quantity
-            $table->foreignId('category_id')->constrained()->onDelete('cascade'); // Foreign key
-            $table->timestamps(); // Created at and updated at timestamps 
+            $table->integer('stock')->default(0);
+            $table->json('image_path')->nullable();
+            $table->string('main_image_path')->nullable();
+            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->timestamps();
         });
     }
 

@@ -9,7 +9,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    protected $fillable = ['name', 'description', 'price', 'stock', 'category_id','image_path'];
+    protected $fillable = [
+        'name',
+        'description',
+        'price',
+         'stock',
+         'category_id',
+        'image_path',
+        'main_image_path',
+    ];
 
     public function category()
     {
@@ -31,5 +39,9 @@ class Product extends Model
     {
         return $this->rates()->avg('rate'); // Assuming 'score' is the column for the rating value
     }
+
+    protected $casts = [
+        'image_path' => 'array',
+    ];
 
 }

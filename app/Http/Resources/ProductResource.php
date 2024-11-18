@@ -24,10 +24,11 @@ class ProductResource extends JsonResource
             'name'=>$this->name,
             'description'=>$this->description,
             'price'=>$this->price,
-            'image_path'=>$this->image_path,
             'stock'=>$this->stock,
             'category_id'=>$this->category_id,
-            'image_path'=>$this->image_path,
+            'main_image' => $this->main_image_path ? asset('storage/' . $this->main_image_path) : null,
+            'images' => json_decode($this->image_path),
+
         ];
 }
 }

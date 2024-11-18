@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Facade;
+
 return [
 
     /*
@@ -123,4 +125,9 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+'aliases' => Facade::defaultAliases()->merge([
+    'Image' => Intervention\Image\Facades\Image::class
+])->toArray(),
+
 ];
+
