@@ -9,6 +9,7 @@ use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CategoriesResource;
 use App\Http\Requests\CategoryStoreRequest;
+use Intervention\Image\Laravel\Facades\Image;
 
 class CategoriesController extends Controller
 {
@@ -27,9 +28,11 @@ class CategoriesController extends Controller
     {
         $categorytData = $request->validated();
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('category', 'images');
-            $categorytData['image_path'] = $imagePath;
+            $resizedMainImagePath = 'category/' . time() . '_' . $request->file('image')->getClientOriginalName();
+            $resizedMainImage = Image::read($request->file('image'))->resize(200, 300);
+            $resizedMainImage->save(storage_path('app/public/images/' . $resizedMainImagePath));
         }
+        $categorytData ['image_path'] = $resizedMainImagePath;
         $category = Categories::create($categorytData);
 
         return response()->json([

@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Setting extends Model
 {
-     protected $fillable = ['title', 'value'];
+     protected $fillable = ['title', 'value','homepage_image'];
 }

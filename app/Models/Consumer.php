@@ -19,7 +19,6 @@ class Consumer extends Authenticatable implements JWTSubject
         'email',
         'password',
         'phone_number',
-        'image_path',
     ];
 
     protected $hidden = [

@@ -11,14 +11,15 @@ use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\ConsumerController;
 use App\Http\Controllers\Api\HomePageController;
 use App\Http\Controllers\Api\CategoriesController;
-use App\Http\Controllers\Api\CategoryPageController;
+use App\Http\Controllers\Api\ImageUploadController;
 use App\Http\Controllers\Api\ProductPageController;
+use App\Http\Controllers\Api\CategoryPageController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
-Route::get('homepage', [HomePageController::class, 'index']);
+
 
 
 Route::group(['prefix' => 'auth'], function ($router)
@@ -38,13 +39,19 @@ Route::middleware(['auth:consumer-api'])->group(function(){
     Route::post('user_logout', [ConsumerController::class ,'logout']);
 
     Route::Post('createCart', [CartController::class, 'makeCart']);
+    Route::Post('show', [CartController::class, 'show']);
     Route::Post('AddToCart', [CartController::class, 'addToCart']);
-    Route::Post('showCart', [CartController::class, 'showCart']);
+    Route::Post('order', [CartController::class, 'order']);
+    Route::Post('Remove_From_Cart', [CartController::class, 'remove_from_cart']);
+    Route::Post('Destroy_Cart', [CartController::class, 'destroyCart']);
 
     Route::post('rates', [RateController::class, 'store']);
 
     Route::get('product_page', [ProductPageController::class, 'show']);
+
     Route::get('catrgory_page', [CategoryPageController::class, 'show']);
+
+    Route::get('homepage', [HomePageController::class, 'index']);
 
 });
 
@@ -69,6 +76,8 @@ Route::middleware(['auth:api'])->group(function(){
     Route::delete('products', [ProductController::class, 'delete_product']);
     // Setting Function
     Route::post('settings', [SettingController::class, 'add']);
+    Route::post('home_image', [ImageUploadController::class, 'upload']);
+
     Route::get('settings', [SettingController::class, 'get_all']);
     Route::delete('settings', [SettingController::class, 'deleteSetting']);
 

@@ -125,9 +125,5 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-'aliases' => Facade::defaultAliases()->merge([
-    'Image' => Intervention\Image\Facades\Image::class
-])->toArray(),
-
 ];
 

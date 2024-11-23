@@ -8,41 +8,42 @@ use App\Models\Consumer;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CartAddRequest;
-use App\Http\Requests\CartCreateRequest;
-use App\Http\Requests\CartShowRequest;
 use App\Http\Resources\CartResource;
+use App\Http\Requests\CartAddRequest;
+use App\Http\Requests\CartShowRequest;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\CartCreateRequest;
 use Illuminate\Validation\ValidationException;
 
 class CartController extends Controller
 {
-public function makeCart(CartCreateRequest $request)
-{
+    public function makeCart(CartCreateRequest $request)
+    {
 
-    $validatedData = $request->validated();
+        $validatedData = $request->validated();
 
- $product = Product::findOrFail($validatedData['product_id']);
+        $product = Product::findOrFail($validatedData['product_id']);
 
- // Check if the requested quantity exceeds stock
- if ($validatedData['quantity'] > $product->stock) {
-     throw ValidationException::withMessages([
-         'quantity' => ['The quantity exceeds the available stock for this product.'],
-     ]);
- }
-   $product->stock -= $validatedData['quantity'];  // Decrease stock by the quantity added to the cart
-   $product->save();
- $cart = Cart::create($validatedData);
+        // Check if the requested quantity exceeds stock
+        if ($validatedData['quantity'] > $product->stock) {
+            throw ValidationException::withMessages([
+                'quantity' => ['The quantity exceeds the available stock for this product.'],
+            ]);
+        }
+        $product->stock -= $validatedData['quantity'];  // Decrease stock by the quantity added to the cart
+        $product->save();
+        $cart = Cart::create($validatedData);
 
-          return response()->json([
-              'message' => 'Cart Created Successfully!',
-              'data' => new  CartResource($cart),
-          ], Response::HTTP_CREATED);
- }
+        return response()->json([
+            'message' => 'Cart Created Successfully!',
+            'data' => new  CartResource($cart),
+        ], Response::HTTP_CREATED);
+    }
 
     public function addToCart(CartAddRequest $request)
     {
 
-    $validatedData = $request->validated();
+        $validatedData = $request->validated();
 
         // Find the consumer
         $consumer = Consumer::findOrFail($validatedData['consumer_id']);
@@ -87,32 +88,111 @@ public function makeCart(CartCreateRequest $request)
         ], Response::HTTP_CREATED);
     }
 
-    public function showCart(CartShowRequest $request)
-{
-    $validatedData = $request->validated();
+    public function order(CartShowRequest $request)
+    {
+        $validatedData = $request->validated();
 
-    $cartItems = Cart::where('consumer_id', $validatedData['consumer_id'])->get();
-    $cartDetails = $cartItems->map(function ($item) {
-        $payment =$item->quantity * $item->product->price;
-        return [
-            'product_name' => $item->product->name,
-            'quantity' => $item->quantity,
-            'price' => $item->product->price,
-            'total_price' => $payment,
-        ];
-    });
-    return response()->json([
-        'message' => 'Cart retrieved successfully!',
-        'data' => $cartDetails,
-    ], Response::HTTP_OK);
+        $cartItems = Cart::where('consumer_id', $validatedData['consumer_id'])->get();
+        $cartDetails = $cartItems->map(function ($item) {
+            $payment = $item->quantity * $item->product->price;
+            return [
+                'Product_id' => $item->product->id,
+                'product_name' => $item->product->name,
+                'product_image' => asset('storage/images/' . $item->product->main_image_path),
+                'quantity' => $item->quantity,
+                'price' => $item->product->price,
+                'total_price' => $payment,
+            ];
+        });
+        // Calculate the total of all total_prices
+        $totalAmount = $cartDetails->sum('total_price');
+
+
+        $discountRate = 10; // Example: 10% discount
+        $discountAmount = ($totalAmount * $discountRate) / 100;
+        $finalPrice = $totalAmount - $discountAmount;
+        return response()->json([
+            'message' => 'Cart retrieved successfully!',
+            'data' => $cartDetails,
+            'total_amount' => $totalAmount, // Total before discount
+            'discount_amount' => $discountAmount, // Amount discounted
+            'final_price' => $finalPrice, // Total after discount
+        ], Response::HTTP_OK);
+    }
+
+    public function remove_from_cart(CartAddRequest $request)
+    {
+        $validatedData = $request->validated();
+        // Find the consumer
+        $consumer = Consumer::findOrFail($validatedData['consumer_id']);
+        // Find the product
+        $product = Product::findOrFail($validatedData['product_id']);
+        $cartItem = $consumer->cart()->where('product_id', $validatedData['product_id'])->first();
+
+        if ($cartItem) {
+            // Check if the quantity to remove is greater than or equal to the current quantity
+            if ($validatedData['quantity'] >= $cartItem->quantity) {
+                // Delete the cart item
+                $cartItem->delete();
+
+                // Increase stock by the quantity of the removed product
+                $product->stock += $cartItem->quantity; // Add the entire quantity back to stock
+                $product->save();
+
+                return response()->json([
+                    'message' => 'Product removed from cart successfully!',
+                    'data' => null,
+                ], Response::HTTP_OK);
+            } else {
+                // Update the quantity if it exists
+                $newQuantity = $cartItem->quantity - $validatedData['quantity'];
+
+                if ($newQuantity < 0) {
+                    throw ValidationException::withMessages([
+                        'quantity' => ['The updated quantity cannot be negative.'],
+                    ]);
+                }
+
+                // Update the cart item quantity
+                $cartItem->quantity = $newQuantity;
+                $cartItem->save();
+
+                // Increase stock by the quantity removed
+                $product->stock += $validatedData['quantity'];
+                $product->save();
+
+                return response()->json([
+                    'message' => 'Product quantity updated successfully!',
+                    'data' => new CartResource($cartItem),
+                ], Response::HTTP_OK);
+            }
+        }
+
+        // If no cart item found
+        return response()->json([
+            'message' => 'Product not found in cart.',
+        ], Response::HTTP_NOT_FOUND);
+    }
+
+    public function destroyCart(CartShowRequest $request)
+    {
+        $validatedData = $request->validated();
+
+
+        $consumer = Consumer::findOrFail($validatedData['consumer_id']);
+        $consumer->cart()->delete();
+
+
+        return response()->json([
+            'message' => 'All items removed from cart successfully!',
+            $consumer->cart()->onlyTrashed()->count(),
+        ], Response::HTTP_OK);
+    }
+
+    public function show(){
+        $cart=Cart::onlyTrashed()->get();
+        return response()->json([
+            'data'=> $cart ,
+        ]);
+    }
 }
-
-
-}
-
-
-
-
-
-
-

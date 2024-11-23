@@ -27,4 +27,17 @@ class CartAddRequest extends FormRequest
             'quantity' => 'required|integer|min:1',
         ];
     }
+    public function messages()
+    {
+        return [
+            'consumer_id.required' => 'Consumer ID is required.',
+            'consumer_id.exists' => 'Consumer ID does not exist.',
+            'product_id.required' => 'Product ID is required.',
+            'product_id.unique' => 'Product is already in cart.',
+            'product_id.exists' => 'Product ID does not exist.',
+            'quantity.required' => 'Quantity is required.',
+            'quantity.integer' => 'Quantity must be an integer.',
+            'quantity.min' => 'Quantity must be at least 1.',
+        ];
+    }
 }

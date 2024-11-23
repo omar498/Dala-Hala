@@ -15,7 +15,9 @@ class CategoryPageController extends Controller
 
         try{
             $id = $request->input('id');
-            $category = Categories::with('products')->findOrFail($id);
+            $category = Categories::with(['products' => function ($query) {
+                $query->take(6); // Limit to 6
+            }])->findOrFail($id);
             return response([
                 'message' => 'Category retrieved successfully',
                 'data' => new CategoriesResource($category),

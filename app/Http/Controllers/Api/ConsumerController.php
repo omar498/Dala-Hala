@@ -44,7 +44,6 @@ class ConsumerController extends Controller
             'message' => 'Login successful',
             'data'=>new ConsumerResource($consumer),
             'access_token' => $token,
-          'token_type' => 'Bearer'
 
         ],200);
     }

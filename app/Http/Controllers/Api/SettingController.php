@@ -6,6 +6,7 @@ use App\Models\Setting;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SettingResource;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\SettingStoreRequest;
 
 class SettingController extends Controller
@@ -21,6 +22,10 @@ class SettingController extends Controller
             'data' => new SettingResource($setting),
         ], 201);
     }
+
+
+
+
 
     public function get_all()
     {
