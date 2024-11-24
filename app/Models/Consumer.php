@@ -50,9 +50,9 @@ class Consumer extends Authenticatable implements JWTSubject
         return $this->hasOne(Cart::class);
     }
 
-    // public function products()
-    // {
-    //     return $this->hasMany(Product::class);
-    // }
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'consumer_products');
+    }
 
 }

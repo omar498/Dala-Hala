@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Pages;
 
 use App\Models\Images;
 use App\Models\Product;

@@ -9,11 +9,13 @@ use App\Http\Controllers\Api\RateController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\ConsumerController;
-use App\Http\Controllers\Api\HomePageController;
+use App\Http\Controllers\Api\Pages\HomePageController;
+use App\Http\Controllers\Api\WishlistController;
 use App\Http\Controllers\Api\CategoriesController;
 use App\Http\Controllers\Api\ImageUploadController;
-use App\Http\Controllers\Api\ProductPageController;
-use App\Http\Controllers\Api\CategoryPageController;
+use App\Http\Controllers\Api\Pages\ProductPageController;
+use App\Http\Controllers\Api\Pages\CategoryPageController;
+use App\Http\Controllers\Api\Pages\OrderController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -38,20 +40,23 @@ Route::middleware(['auth:consumer-api'])->group(function(){
     Route::post('refresh_user_token', [ConsumerController::class, 'refreshToken']);
     Route::post('user_logout', [ConsumerController::class ,'logout']);
 
-    Route::Post('createCart', [CartController::class, 'makeCart']);
-    Route::Post('show', [CartController::class, 'show']);
     Route::Post('AddToCart', [CartController::class, 'addToCart']);
+    Route::Post('show', [CartController::class, 'show']);
     Route::Post('order', [CartController::class, 'order']);
     Route::Post('Remove_From_Cart', [CartController::class, 'remove_from_cart']);
     Route::Post('Destroy_Cart', [CartController::class, 'destroyCart']);
-
     Route::post('rates', [RateController::class, 'store']);
 
+        // app pages
     Route::get('product_page', [ProductPageController::class, 'show']);
-
+    Route::Post('order_page', [OrderController::class, 'order']);
     Route::get('catrgory_page', [CategoryPageController::class, 'show']);
+    Route::get('home_page', [HomePageController::class, 'index']);
 
-    Route::get('homepage', [HomePageController::class, 'index']);
+
+    Route::post('wishlist', [WishlistController::class, 'addToWishlist']);
+    Route::delete('wishlist/{id}', [WishlistController::class, 'removeFromWishlist']);
+    Route::get('wishlist/{consumer}', [WishlistController::class, 'showWishlist']);
 
 });
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Pages;
 
 use App\Models\Product;
 use App\Models\Setting;
@@ -14,15 +14,15 @@ class ProductPageController extends Controller
 {
     public function show(Request $request)
     {
-        $settings = Setting::all();
 
 
         try{
-        $id = $request->input('id');
-        $product = Product::findOrFail($id);
-        $averageRating = $product->averageRating();
+            $id = $request->input('id');
+            $product = Product::findOrFail($id);
+            $averageRating = $product->averageRating();
 
-         // Get common products from the same category
+            // Get common products from the same category
+            $settings = Setting::all();
          $commonProducts = Product::where('category_id', $product->category_id)
          ->where('id' ,'!=', $product->id) //  prevent the current product from appearing
          ->take(3)

@@ -22,6 +22,8 @@ class ProductHomeResource extends JsonResource
             'price'=>$this->price,
             'stock'=>$this->stock,
             'main_image'=> asset('storage/images/'.$this->main_image_path),
+            'ratings' => $this->rates->pluck('rate'), // Assuming 'rating' is the field in Rate model
+            'comments' => $this->rates->pluck('comment'),
         ];
     }
 }

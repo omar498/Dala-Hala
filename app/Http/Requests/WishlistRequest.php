@@ -2,10 +2,9 @@
 
 namespace App\Http\Requests;
 
-use GuzzleHttp\Psr7\Message;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CartCreateRequest extends FormRequest
+class WishlistRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,11 +22,8 @@ class CartCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'consumer_id' => 'required|exists:consumers,id',
-            'product_id' => 'required',
-            'quantity' => 'required|integer|min:1',
+            'consumer_id' => 'required|integer|exists:consumers,id',
+            'product_id' => 'required|integer|exists:products,id',
         ];
-
     }
-
 }

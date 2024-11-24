@@ -13,15 +13,15 @@ class Product extends Model
         'name',
         'description',
         'price',
-         'stock',
-         'category_id',
+        'stock',
+        'category_id',
         'image_path',
         'main_image_path',
     ];
 
     public function category()
     {
-       //  return $this->belongsTo(Categories::class);
+        //  return $this->belongsTo(Categories::class);
         return $this->belongsTo(Categories::class, 'category_id');
     }
 
@@ -44,4 +44,8 @@ class Product extends Model
         'image_path' => 'array',
     ];
 
+    public function consumers()
+    {
+        return $this->belongsToMany(Consumer::class, 'consumer_products');
+    }
 }

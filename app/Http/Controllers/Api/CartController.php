@@ -17,28 +17,6 @@ use Illuminate\Validation\ValidationException;
 
 class CartController extends Controller
 {
-    public function makeCart(CartCreateRequest $request)
-    {
-
-        $validatedData = $request->validated();
-
-        $product = Product::findOrFail($validatedData['product_id']);
-
-        // Check if the requested quantity exceeds stock
-        if ($validatedData['quantity'] > $product->stock) {
-            throw ValidationException::withMessages([
-                'quantity' => ['The quantity exceeds the available stock for this product.'],
-            ]);
-        }
-        $product->stock -= $validatedData['quantity'];  // Decrease stock by the quantity added to the cart
-        $product->save();
-        $cart = Cart::create($validatedData);
-
-        return response()->json([
-            'message' => 'Cart Created Successfully!',
-            'data' => new  CartResource($cart),
-        ], Response::HTTP_CREATED);
-    }
 
     public function addToCart(CartAddRequest $request)
     {
@@ -57,12 +35,26 @@ class CartController extends Controller
             ]);
         }
 
+         // Check if a soft-deleted cart item exists for this consumer and product
+    $cart = Cart::withTrashed()
+    ->where('product_id', $validatedData['product_id'])
+    ->where('consumer_id', $validatedData['consumer_id']) // Assuming consumer_id is passed in request
+    ->first();
+
+if ($cart) {
+    // If it exists and is soft-deleted, restore it
+    if ($cart->trashed()) {
+        $cart->restore();
+    }
+
         // Check if the cart item already exists
         $cartItem = $consumer->cart()->where('product_id', $validatedData['product_id'])->first();
 
         if ($cartItem) {
+
             // Update the quantity if it exists
-            $newQuantity = $cartItem->quantity + $validatedData['quantity'];
+
+            $newQuantity = $cartItem->quantity+  $validatedData['quantity'];
             if ($newQuantity > $product->stock) {
                 throw ValidationException::withMessages([
                     'quantity' => ['The updated quantity exceeds the available stock for this product.'],
@@ -87,6 +79,7 @@ class CartController extends Controller
             'data' => new CartResource($cartItem),
         ], Response::HTTP_CREATED);
     }
+}
 
     public function order(CartShowRequest $request)
     {
@@ -188,6 +181,7 @@ class CartController extends Controller
             $consumer->cart()->onlyTrashed()->count(),
         ], Response::HTTP_OK);
     }
+
 
     public function show(){
         $cart=Cart::onlyTrashed()->get();
