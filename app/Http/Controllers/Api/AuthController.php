@@ -17,51 +17,51 @@ class AuthController extends Controller
     {
         $validator = $request->validated();
 
-        $validator = $request->only('email','password');
+        $validator = $request->only('email', 'password');
         if (!$token = auth()->guard('api')->attempt($validator)) {
             return response()->json(['error' => 'Invalid Credentials'], 401);
         }
         $user = auth()->guard('api')->user();
         return response()->json([
             'message' => 'Login successful',
-            'data'=>new UserResource($user),
+            'data' => new UserResource($user),
             'access_token' => $token,
-          'token_type' => 'Bearer'
+            'token_type' => 'Bearer'
 
-        ],200);
-
+        ], 200);
     }
 
-    public function register(AdminRegisterRequest $request) {
-        $validator =$request->validated();
-         $user = User::create(array_merge(
-        $validator,
-        ['password' => bcrypt($validator['password'])] // Hash the password
-    ));
+    public function register(AdminRegisterRequest $request)
+    {
+        $validator = $request->validated();
+        $user = User::create(array_merge(
+            $validator,
+            ['password' => bcrypt($validator['password'])] // Hash the password
+        ));
         return response()->json([
             'message' => 'User successfully registered',
             'data' => new UserResource($user)
         ], 201);
-}
+    }
 
 
 
 
     public function delete_admin(Request $request)
     {
-        try{
-        $id = $request->input('id');
+        try {
+            $id = $request->input('id');
 
-        $user = User::findOrFail($id);
-        $user->delete();
+            $user = User::findOrFail($id);
+            $user->delete();
 
-        return response()->json(['message' => 'Admin deleted successfully',
-        'data'=>new UserResource($user),
+            return response()->json([
+                'message' => 'Admin deleted successfully',
+                'data' => new UserResource($user),
 
-         200]);
-        }
-
-        catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+                200
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json(['message' => 'Admin not found'], 404);
         }
     }
@@ -78,10 +78,9 @@ class AuthController extends Controller
         } catch (JWTException $e) {
             return response()->json(['error' => 'token_invalid'], 401);
         }
-
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
         try {
             // Invalidate the token
@@ -91,6 +90,4 @@ class AuthController extends Controller
             return response()->json(['error' => 'Could not log out, please try again'], 500);
         }
     }
-
-
 }

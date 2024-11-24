@@ -23,10 +23,11 @@ class CategoryPageController extends Controller
                 if ($ratingFilter) {
                     // Join with rates to filter products by rating
                     $query->whereHas('rates', function ($q) use ($ratingFilter) {
-                        $q->where('rate', $ratingFilter); // Filter by the specified rating
+                        $q->where('rate', /* '<=', */ $ratingFilter);
+                        // Filter by the  actual rate and greater than
                     });
                 }
-                $query->take(6); // Limit to 6 products
+                $query->take(6);
 
             }])->findOrFail($rate);
 

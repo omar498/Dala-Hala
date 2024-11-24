@@ -6,16 +6,17 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\RateController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\ConsumerController;
-use App\Http\Controllers\Api\Pages\HomePageController;
 use App\Http\Controllers\Api\WishlistController;
 use App\Http\Controllers\Api\CategoriesController;
 use App\Http\Controllers\Api\ImageUploadController;
+use App\Http\Controllers\Api\Pages\OrderController;
+use App\Http\Controllers\Api\Pages\HomePageController;
 use App\Http\Controllers\Api\Pages\ProductPageController;
 use App\Http\Controllers\Api\Pages\CategoryPageController;
-use App\Http\Controllers\Api\Pages\OrderController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -52,6 +53,9 @@ Route::middleware(['auth:consumer-api'])->group(function(){
     Route::Post('order_page', [OrderController::class, 'order']);
     Route::get('catrgory_page', [CategoryPageController::class, 'show']);
     Route::get('home_page', [HomePageController::class, 'index']);
+    Route::post('payment', [PaymentController::class, 'acceptString']);
+
+
 
 
     Route::post('wishlist', [WishlistController::class, 'addToWishlist']);
