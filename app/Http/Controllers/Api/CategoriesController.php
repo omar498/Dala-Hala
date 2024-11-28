@@ -9,6 +9,7 @@ use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CategoriesResource;
 use App\Http\Requests\CategoryStoreRequest;
+use App\Http\Requests\CategoryUpdateRequest;
 use Intervention\Image\Laravel\Facades\Image;
 
 class CategoriesController extends Controller
@@ -39,6 +40,38 @@ class CategoriesController extends Controller
             'message' => 'Category created successfully!',
             'data' => new CategoriesResource($category)
         ], Response::HTTP_CREATED);
+    }
+
+    public function update(CategoryUpdateRequest $request)
+    {
+        // Get the category ID from the request body
+        $id = $request->input('id');
+
+        // Retrieve the existing category
+        $category = Categories::findOrFail($id);
+
+        // Prepare validated data
+        $categoryData = $request->validated();
+
+        // Check if a new image file is uploaded
+        if ($request->hasFile('image')) {
+            // Generate a new path for the resized image
+            $resizedMainImagePath = 'category/' . time() . '_' . $request->file('image')->getClientOriginalName();
+            $resizedMainImage = Image::read($request->file('image'))->resize(200, 300);
+            $resizedMainImage->save(storage_path('app/public/images/' . $resizedMainImagePath));
+
+            // Update the image path in validated data
+            $categoryData['image_path'] = $resizedMainImagePath;
+        }
+
+        // Update the existing category record
+        $category->update($categoryData);
+
+        // Return a success response with the updated category
+        return response()->json([
+            'message' => 'Category updated successfully!',
+            'data' => new CategoriesResource($category)
+        ], Response::HTTP_OK);
     }
 
     public function delete(Request $request)

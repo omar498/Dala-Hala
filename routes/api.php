@@ -69,16 +69,20 @@ Route::middleware(['auth:api'])->group(function(){
     /*  Categories Route */
     Route::get('/Categories', [CategoriesController::class, 'index']);
     Route::post('Categories',[CategoriesController::class,'store']);
+    Route::post('Categories_update',[CategoriesController::class,'update']);
     Route::delete('Categories_Delete', [CategoriesController::class, 'delete']);
 
     /*  Product Route */
     Route::get('products', [ProductController::class, 'index']);
     Route::post('products', [ProductController::class, 'store']);
     Route::delete('products', [ProductController::class, 'delete_product']);
+    Route::post('products_update', [ProductController::class, 'update']);
 
     /*  Setting Route */
     Route::post('settings', [SettingController::class, 'add']);
-    Route::post('home_image', [ImageUploadController::class, 'upload']);
+    Route::post('settings_update', [SettingController::class, 'update']);
     Route::get('settings', [SettingController::class, 'get_all']);
     Route::delete('settings', [SettingController::class, 'deleteSetting']);
+    Route::post('home_image', [ImageUploadController::class, 'upload']);
+    Route::post('home_image_upload', [ImageUploadController::class, 'update']);
 });
