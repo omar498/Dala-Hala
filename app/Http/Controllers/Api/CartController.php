@@ -18,13 +18,11 @@ class CartController extends Controller
 
     public function addToCart(CartAddRequest $request)
     {
-
         $validatedData = $request->validated();
 
         $consumer = Consumer::findOrFail($validatedData['consumer_id']);
         $product = Product::findOrFail($validatedData['product_id']);
 
-        // Check if the requested quantity exceeds available stock
         if ($validatedData['quantity'] > $product->stock) {
             throw ValidationException::withMessages([
                 'quantity' => ['The quantity exceeds the available stock for this product.'],
@@ -37,34 +35,31 @@ class CartController extends Controller
             ->where('consumer_id', $validatedData['consumer_id'])
             ->first();
 
-        if ($cart) {
-            // If it exists and is soft-deleted, restore it
-            if ($cart->trashed()) {
-                $cart->restore();
-            }
+            $cart = $consumer->cart()->where('product_id', $validatedData['product_id'])->first();
 
-            // Check if the cart item already exists
-            $cartItem = $consumer->cart()->where('product_id', $validatedData['product_id'])->first();
-
-            if ($cartItem) {
+            if ($cart) {
 
                 // Update the quantity if it exists
 
-                $newQuantity = $cartItem->quantity +  $validatedData['quantity'];
+                $newQuantity = $cart->quantity +  $validatedData['quantity'];
                 if ($newQuantity > $product->stock) {
                     throw ValidationException::withMessages([
                         'quantity' => ['The updated quantity exceeds the available stock for this product.'],
                     ]);
                 }
-                $cartItem->quantity = $newQuantity;
-                $cartItem->save();
-            } else {
-                // Create a new cart item if it doesn't exist
-                $cartItem = $consumer->cart()->create([
-                    'product_id' => $validatedData['product_id'],
-                    'quantity' => $validatedData['quantity'],
-                ]);
-            }
+                $cart->quantity = $newQuantity;
+                $cart->save();
+                return response()->json([
+                    'message' => 'Product added to cart successfully!',
+                    'data' => new CartResource($cart),
+                ], Response::HTTP_CREATED);
+        }
+        else {
+            // Create a new cart if it doesn't exist
+            $cart = $consumer->cart()->create([
+                'product_id' => $validatedData['product_id'],
+                'quantity' => $validatedData['quantity'],
+            ]);
 
             // Decrease the product stock by the added quantity
             $product->stock -= $validatedData['quantity'];
@@ -72,7 +67,7 @@ class CartController extends Controller
 
             return response()->json([
                 'message' => 'Product added to cart successfully!',
-                'data' => new CartResource($cartItem),
+                'data' => new CartResource($cart),
             ], Response::HTTP_CREATED);
         }
     }
@@ -83,7 +78,7 @@ class CartController extends Controller
         $validatedData = $request->validated();
 
         $consumer = Consumer::findOrFail($validatedData['consumer_id']);
-        
+
         $product = Product::findOrFail($validatedData['product_id']);
         $cartItem = $consumer->cart()->where('product_id', $validatedData['product_id'])->first();
 

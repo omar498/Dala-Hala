@@ -14,7 +14,6 @@ class WishlistController extends Controller
 {
     public function addToWishlist(WishlistRequest $request)
     {
-        // Find the consumer and product
         $consumer = Consumer::findOrFail($request->consumer_id);
         $product = Product::findOrFail($request->product_id);
 
@@ -25,7 +24,7 @@ class WishlistController extends Controller
             ], 409);
         }
 
-        // Attach the product to the consumer's wishlist
+        // Attach the product to the consumer
        $consumer->products()->attach($product);
 
         return response()->json([
@@ -33,9 +32,10 @@ class WishlistController extends Controller
             'message' => 'Product added to wishlist successfully.',
         ]);
     }
+
     public function removeFromWishlist($id)
     {
-        // Find the wishlist item by ID
+
         $wishlist = ConsumerWhislist::find($id);
 
         // Check if the wishlist item exists
@@ -43,10 +43,7 @@ class WishlistController extends Controller
             return response()->json(['error' => 'Wishlist item not found'], 404);
         }
 
-        // Delete the wishlist item
         $wishlist->delete();
-
-        // Return a success response
         return response()->json([
             'data'=>new WishlistResource( $wishlist),
             'message' => 'Wishlist item removed successfully'], 200);
@@ -55,11 +52,11 @@ class WishlistController extends Controller
     public function showWishlist($consumerId)
 {
 
- // Retrieve all wishlists for the specific consumer ID
+
  $wishlists = ConsumerWhislist::where('consumer_id', $consumerId)->get();
 
- // Return a JSON response
  return WishlistResource::collection($wishlists);
 
 }
+
 }

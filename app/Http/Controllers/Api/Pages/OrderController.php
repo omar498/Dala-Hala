@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Api\Pages;
 
+use Stripe\Stripe;
 use App\Models\Cart;
 use App\Models\Setting;
-use Illuminate\Http\Response;
+use Stripe\PaymentIntent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CartShowRequest;
 use App\Http\Resources\SettingResource;
@@ -35,12 +36,22 @@ class OrderController extends Controller
         $discountRate = 10; // Example: 10% discount
         $discountAmount = ($totalAmount * $discountRate) / 100;
         $finalPrice = $totalAmount - $discountAmount;
+
+       /*  Stripe::setApiKey(env('STRIPE_SECRET'));
+        $intent = PaymentIntent::create([
+            'amount' => $finalPrice * 100, // Convert to cents
+            'currency' => 'usd',
+            'automatic_payment_methods' => [
+                'enabled' => true,
+            ],
+        ]); */
         return response()->json([
             'message' => 'Order retrieved successfully!',
             'data' => $cartDetails,
             'total_amount' => $totalAmount,
             'discount_amount' => $discountAmount,
             'final_price' => $finalPrice,
+            /*'client_secret' => $intent->client_secret, */
             'footer'=>SettingResource::collection($settings)
 
 

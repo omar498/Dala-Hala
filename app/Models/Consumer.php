@@ -46,7 +46,7 @@ class Consumer extends Authenticatable implements JWTSubject
 
     public function cart()
     {
-        // 1==>many
+        
         return $this->hasOne(Cart::class);
     }
 

@@ -26,4 +26,10 @@ class Cart extends Model
     {
         return $this->belongsTo(Product::class);
     }
+    public function calculateTotal()
+    {
+        return $this->with('product')->get()->sum(function ($item) {
+            return $item->product->price * $item->quantity; // Assuming price is a field in your Product model
+        });
+    }
 }

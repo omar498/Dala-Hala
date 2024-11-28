@@ -51,13 +51,12 @@ class CategoriesController extends Controller
             'id.exists' => 'The specified category ID does not exist.',
 
         ]);
-        // Find the category by ID
         $category = Categories::find($request->input('id'));
 
         if ($category->products()->count() > 0) {
             return response()->json([
                 'message' => 'Cannot delete category. It contains products.',
-            ], 400); // Return a 400 Bad Request status
+            ], 400); // Bad request
         }
         $category->delete();
 

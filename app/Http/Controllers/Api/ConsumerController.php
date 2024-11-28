@@ -69,9 +69,6 @@ class ConsumerController extends Controller
 
     public function refreshToken(Request $request)
     {
-        $refreshToken = $request->header('Authorization');
-
-
         try {
             $token = JWTAuth::parseToken()->refresh();
             return response()->json(['token' => $token]);

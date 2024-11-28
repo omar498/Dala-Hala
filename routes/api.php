@@ -18,29 +18,20 @@ use App\Http\Controllers\Api\Pages\HomePageController;
 use App\Http\Controllers\Api\Pages\ProductPageController;
 use App\Http\Controllers\Api\Pages\CategoryPageController;
 
-// Route::get('/user', function (Request $request) {
-//     return $request->user();
-// })->middleware('auth:sanctum');
+Route::post('payment', [PaymentController::class, 'test']);
 
-
-
-
-Route::group(['prefix' => 'auth'], function ($router)
-{
-    Route::post('login', [AuthController::class ,'login']);
-    Route::post('register', [AuthController::class ,'register']);
-
-});
-// Consumer Auth
+/* Consumer Auth */
 Route::group(['prefix' => 'user'], function ($router){
     Route::post('login', [ConsumerController::class ,'login']);
     Route::post('register', [ConsumerController::class ,'register']);
 });
 
 Route::middleware(['auth:consumer-api'])->group(function(){
+    /* Consumer Auth */
     Route::post('refresh_user_token', [ConsumerController::class, 'refreshToken']);
     Route::post('user_logout', [ConsumerController::class ,'logout']);
 
+    /* Cart Routes */
     Route::Post('AddToCart', [CartController::class, 'addToCart']);
     Route::Post('show', [CartController::class, 'show']);
     Route::Post('order', [CartController::class, 'order']);
@@ -48,48 +39,46 @@ Route::middleware(['auth:consumer-api'])->group(function(){
     Route::Post('Destroy_Cart', [CartController::class, 'destroyCart']);
     Route::post('rates', [RateController::class, 'store']);
 
-        // app pages
+    /* Application Pages */
     Route::get('product_page', [ProductPageController::class, 'show']);
     Route::Post('order_page', [OrderController::class, 'order']);
     Route::get('catrgory_page', [CategoryPageController::class, 'show']);
     Route::get('home_page', [HomePageController::class, 'index']);
-    Route::post('payment', [PaymentController::class, 'acceptString']);
 
-
-
-
+    /* Wishlist Routes */
     Route::post('wishlist', [WishlistController::class, 'addToWishlist']);
     Route::delete('wishlist/{id}', [WishlistController::class, 'removeFromWishlist']);
     Route::get('wishlist/{consumer}', [WishlistController::class, 'showWishlist']);
-
 });
 
 
+/* Admin Auth */
+Route::group(['prefix' => 'auth'], function ()
+{
+    Route::post('login', [AuthController::class ,'login']);
+    Route::post('register', [AuthController::class ,'register']);
 
+});
 Route::middleware(['auth:api'])->group(function(){
-    // Admin Function
+   /*   Admin Route */
     Route::post('refresh_token', [AuthController::class, 'refreshToken']);
     Route::post('logout', [AuthController::class ,'logout']);
     Route::delete('remove', [AuthController::class,'delete_admin']);
-    // Manage Users Functions
-    Route::delete('delete_user', [ConsumerController::class,'delete_user']);
+    Route::delete('delete_user', [ConsumerController::class,'delete_user']); /* Manage Users Route */
 
-    // Categories Function
+    /*  Categories Route */
     Route::get('/Categories', [CategoriesController::class, 'index']);
     Route::post('Categories',[CategoriesController::class,'store']);
     Route::delete('Categories_Delete', [CategoriesController::class, 'delete']);
 
-    // Product Function
+    /*  Product Route */
     Route::get('products', [ProductController::class, 'index']);
     Route::post('products', [ProductController::class, 'store']);
     Route::delete('products', [ProductController::class, 'delete_product']);
-    // Setting Function
+
+    /*  Setting Route */
     Route::post('settings', [SettingController::class, 'add']);
     Route::post('home_image', [ImageUploadController::class, 'upload']);
-
     Route::get('settings', [SettingController::class, 'get_all']);
     Route::delete('settings', [SettingController::class, 'deleteSetting']);
-
-
-
 });

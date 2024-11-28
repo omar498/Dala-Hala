@@ -23,10 +23,6 @@ class SettingController extends Controller
         ], 201);
     }
 
-
-
-
-
     public function get_all()
     {
         $setting=Setting::all();
